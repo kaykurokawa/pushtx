@@ -35,6 +35,9 @@ Example: python pushtx.y bitcoin [transation in hex]
 This will connect to crypto nodes and broadcast the transactions. Note that there is no check done on the transaction's validity, so this is useful for sending some transactions that would be labeled as invalid by bitcoind or blockchain.info's pushtx (i.e, tx's utilizing OP_RETURN).
 
 
+You can also use pushtx_server.py to keep peer connections open and than use pushtx_client.py to push out new transactions for better efficiency.
+
+
 KNOWN ISSUES:
 
 Please submit any issues you find at https://github.com/kaykurokawa/pushtx/issues
