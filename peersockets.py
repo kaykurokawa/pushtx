@@ -47,6 +47,7 @@ class PeerSocketsHandler(object):
     # tx_broadcast_list is a list of transactions to be broadcast 
     # in hex string (i.e, '03afb8..')
     def __init__(self,crypto,tx_broadcast_list=[],peer_list=[],
+                    connect_to_dns_seeds = True, 
                     max_peers = DEFAULT_MAX_PEERS,
                     num_tx_broadcasts = DEFAULT_NUM_TX_BROADCASTS):
 
@@ -77,8 +78,9 @@ class PeerSocketsHandler(object):
         self.msg_recv_buffer=''
 
         # connect to DNS seeds
-        for address in cryptoconfig.DNS_SEEDS[self.crypto]:
-            self.create_peer_socket(address)
+        if connect_to_dns_seeds:
+            for address in cryptoconfig.DNS_SEEDS[self.crypto]:
+                self.create_peer_socket(address)
 
         # connect to specified peers
         for address in peer_list:
@@ -491,6 +493,7 @@ class PeerSocket(object):
                 self._process_inv_block(inv_hash)
             else:
                 logging.error("unknown inv {} found".format(inv_type))
+
     def _process_inv_tx(self,inv_hash):
         self.tx_hash_list.append(inv_hash)
 
