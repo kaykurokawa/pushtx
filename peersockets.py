@@ -15,8 +15,7 @@ ADDRESS_TO_GET_IP='google.com' #connect to this address, in order to retreive co
 NONCE = 1 
 DEFAULT_MAX_PEERS=128 #max number of peers 
 DEFAULT_NUM_TX_BROADCASTS=20 #number of peers to broadcast tx to 
-MESSAGING_PORT=1944
-LOG_FILENAME='persockets.log' 
+LOG_FILENAME='peersockets.log' 
 
 def socketrecv(conn,init_buffer_size):
     msg=conn.recv(init_buffer_size)
@@ -101,7 +100,7 @@ class PeerSocketsHandler(object):
             try:
                 address=socket.gethostbyname(address)         
             except Exception as e:
-                logging.warn("failed to resolved address "+address)
+                logging.warn("failed to resolve address "+address)
                 return False 
         try:
             peer=PeerSocket(self.crypto)
