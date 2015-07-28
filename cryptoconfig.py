@@ -44,8 +44,13 @@ DNS_SEEDS           = {'bitcoin' : ['dnsseed.bluematt.me','bitseed.xf2.org',
                                           "test.dnsseed.masternode.io"]  
                       }
  
-                      
-# used for pushtx_server.py
+
+
+
+# used in PeerSocketsHandler to listen for message
 MESSAGING_PORT      = {'bitcoin':1944,'litecoin':1945,'dogecoin':1946,'dashpay':1921,
                        'bitcoin_testnet':1947,'litecoin_testnet':1948,'dogecoin_testnet':1949,
                        'dashpay_testnet':1931}
+
+
+

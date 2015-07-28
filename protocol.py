@@ -1,17 +1,39 @@
-# Contains function to process bitcoin messages 
+# Contains function to process bitcoin and bitcoin derived crypto currency p2p messages 
 # Some of the code her is taken from Caesure by Sam Rushing (https://github.com/samrushing/caesure)
 
 import socket
 import struct
 from hashlib import sha256
 
-VALID_COMMANDS=['getaddr','addr','inv','getblocks','headers','getheaders','getdata','notfound','block','tx','pong',
-                'ping','version','verack','reject']
+VALID_COMMANDS=['getaddr','addr','inv','getblocks','headers','getheaders','getdata',
+                'notfound','block','tx','pong','ping','version','verack','reject']
 
+DASHPAY_CUSTOM_COMMANDS = ['dsee','dseep','mvote','dseg','dsq','dsa','dsi']
+CRYPTO_CUSTOM_COMMANDS = {'dashpay':DASHPAY_CUSTOM_COMMANDS,
+                          'dashpay_testnet':DASHPAY_CUSTOM_COMMANDS}
 MSGHEADER_SIZE=24
-def is_valid_command(data):    
-    out = any([compare_command(data,command) for command in VALID_COMMANDS])
+
+def is_valid_command(data,crypto_type=None):   
+    if crypto_type is None:
+        out = any([compare_command(data,command) for command in VALID_COMMANDS])
+    else:
+        if crypto_type in CRYPTO_CUSTOM_COMMANDS:
+            crypto_custom_commands=CRYPTO_CUSTOM_COMMANDS[crypto_type]
+        else:
+            crypto_custom_commands=[]
+        valid_commands= VALID_COMMANDS + crypto_custom_commands
+        out = any([compare_command(data,command) for command in valid_commands])
+
     return out
+
+def is_valid_inv_type(inv_type,crypto_type=None):
+    if inv_type in [1,2,3]:
+        return True
+    elif crypto_type in ['dashpay','dashpay_testnet'] and inv_type in range(1,9):
+        return True
+    else:
+        return False
+    
 
 def compare_command(data, string):  
     tuple_start=get_command_msgheader(data)

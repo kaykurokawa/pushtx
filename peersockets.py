@@ -8,13 +8,13 @@ from hashlib import sha256
 import protocol
 import cryptoconfig
 
-USER_AGENT='/KCRYPTOTOOLS:0001/' #BIP 14
+USER_AGENT='/Satoshi:0.10.0/' #BIP 14
 TCP_RECV_PACKET_SIZE=4096
-SOCKET_BLOCK_SECONDS=0 #None means blocking calls, 0 means non blocking calls
+SOCKET_BLOCK_SECONDS=0 # None means blocking calls, 0 means non blocking calls
 ADDRESS_TO_GET_IP='google.com' #connect to this address, in order to retreive computer IP
 NONCE = 1 
-DEFAULT_MAX_PEERS=128 #max number of peers 
-DEFAULT_NUM_TX_BROADCASTS=20 #number of peers to broadcast tx to 
+DEFAULT_MAX_PEERS = 128 #max number of peers 
+DEFAULT_NUM_TX_BROADCASTS = 20 #number of peers to broadcast tx to 
 LOG_FILENAME='peersockets.log' 
 
 def socketrecv(conn,init_buffer_size):
@@ -278,11 +278,12 @@ class PeerSocket(object):
             data_length=protocol.get_length_msgheader(self.recv_buffer)
             self.expected_msg_size=data_length+protocol.MSGHEADER_SIZE
             #if valid command is not contained, packet will be thrown out 
-            if protocol.is_valid_command(self.recv_buffer)==False:
+            if protocol.is_valid_command(self.recv_buffer,self.crypto)==False:
                 self.total_junk_bytes_received+=len(self.recv_buffer)
                 self.expected_msg_size=0
+                cmd = protocol.get_command_msgheader(self.recv_buffer)
                 self.recv_buffer=''
-                logging.error('Invalid command found in buffer: {}'.format(self.recv_buffer))
+                logging.error('Invalid command found in buffer: {}'.format(cmd))
                 return '' 
         try:
             self.recv_buffer+=self.my_socket.recv(TCP_RECV_PACKET_SIZE)
@@ -409,8 +410,12 @@ class PeerSocket(object):
             pass
         elif protocol.compare_command(data,"reject"): 
             self._process_reject(data)
+        elif (self.crypto in ['dashpay','dashpay_testnet'] and 
+              protocol.compare_command(data,'dseep')):
+            pass
         else:
-            logging.error("unhandled command recieved:",protocol.get_command_msgheader(data))
+            logging.warn("unhandled command recieved:{}".format(
+                                    protocol.get_command_msgheader(data)))
 
     def _process_reject(self,data):
         payload = protocol.get_payload(data)
@@ -484,14 +489,14 @@ class PeerSocket(object):
             end_index=begin_index+36
             inv_type = struct.unpack('<I',inv_data[begin_index:begin_index+4])[0]
             inv_hash = struct.unpack('32c',inv_data[begin_index+4:begin_index+36])
-            if(inv_type ==0):#error
-                pass
-            elif(inv_type==1):#tx
-                self._process_inv_tx(inv_hash)
-            elif(inv_type==2):#block
-                self._process_inv_block(inv_hash)
-            else:
+            if not protocol.is_valid_inv_type(inv_type,self.crypto):
                 logging.error("unknown inv {} found".format(inv_type))
+            if inv_type == 1:#tx
+                self._process_inv_tx(inv_hash)
+            elif inv_type == 2:#block
+                self._process_inv_block(inv_hash)
+            elif inv_type == 3:#filtered block
+                pass
 
     def _process_inv_tx(self,inv_hash):
         self.tx_hash_list.append(inv_hash)
