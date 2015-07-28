@@ -9,7 +9,7 @@ Coded with Python 2.7 and tested with Ubuntu 12.04/14.04. No support for Python 
 
 CURRENT FEATURES:
 
-Connect to Bitcoin/Litecoin/Dogecoin nodes and broadcast transactions 
+Connect to Bitcoin/Litecoin/Dogecoin/Dashpay nodes and broadcast transactions 
 
 USAGE:
 
@@ -20,8 +20,8 @@ Command line interface for pushtx
 
 positional arguments:
   Crypto_Name           Name of the cryptocurrency (Supports: ['bitcoin',
-                        'litecoin', 'dogecoin', 'bitcoin_testnet',
-                        'litecoin_testnet', 'dogecoin_testnet'])
+                        'litecoin', 'dogecoin','dashpay', 'bitcoin_testnet',
+                        'litecoin_testnet', 'dogecoin_testnet','dashpay_testnet'])
   Hex_transactions      List of hex transactions to broadcast
 
 optional arguments:
