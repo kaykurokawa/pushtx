@@ -13,7 +13,7 @@ TCP_RECV_PACKET_SIZE=4096
 SOCKET_BLOCK_SECONDS=0 # None means blocking calls, 0 means non blocking calls
 ADDRESS_TO_GET_IP='google.com' #connect to this address, in order to retreive computer IP
 NONCE = 1 
-DEFAULT_MAX_PEERS = 128 #max number of peers 
+DEFAULT_MAX_PEERS = 64 #max number of peers 
 DEFAULT_NUM_TX_BROADCASTS = 20 #number of peers to broadcast tx to 
 LOG_FILENAME='peersockets.log' 
 
@@ -22,7 +22,8 @@ def socketrecv(conn,init_buffer_size):
     # None will be received when socket is closed
     if len(msg) == 0:
         return None
-    expected_msg_len=struct.unpack('<H',msg[0:2])[0] #length of message in bytes,including this message length byte
+    #length of message in bytes,including this message length byte
+    expected_msg_len=struct.unpack('<H',msg[0:2])[0] 
     if len(msg) < expected_msg_len:
         while 1:
             new_msg=conn.recv(expected_msg_len-len(msg))
@@ -159,7 +160,7 @@ class PeerSocketsHandler(object):
         result=self._recv_msg()
 
         #broadcast tx 
-        active_peer_list=[peer for peer in self.fileno_to_peer_dict.values() if peer.get_is_active()]
+        active_peer_list = [peer for peer in self.fileno_to_peer_dict.values() if peer.get_is_active()]
         for current_peer in active_peer_list:
             for (i,(tx,num_broadcasts)) in enumerate(self.tx_broadcast_list):
                 was_broadcast=current_peer.broadcast(tx)# this will not broadcast more than once
@@ -223,7 +224,8 @@ class PeerSocket(object):
         self.is_active=False
         self.address=''
         self.peer_address_list=[]
-        self.tx_hash_list=[] #list of received tx hashes
+        #list of received tx hashes
+        self.tx_hash_list=[] 
         #dictionary where key is hash of tx we want to broadcast and value is tx
         #only contains tx's that have been broacast already using broadcast() function 
         self.broadcast_tx_dict={} 
@@ -314,7 +316,7 @@ class PeerSocket(object):
         
         return process_pong(data)
 
-    def _send_packet(self,command, payload):
+    def _send_packet(self, command, payload):
         lc = len(command)
         assert (lc < 12)
         cmd = command + ('\x00' * (12 - lc))

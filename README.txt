@@ -7,6 +7,7 @@ This tools is for pushing transactions out into various cryptocurrency networks.
 
 Coded with Python 2.7 and tested with Ubuntu 12.04/14.04. No support for Python 3 yet.  
 
+
 CURRENT FEATURES:
 
 Connect to Bitcoin/Litecoin/Dogecoin/Dashpay nodes and broadcast transactions 
@@ -41,5 +42,6 @@ You can also use pushtx_server.py to keep peer connections open and than use pus
 KNOWN ISSUES:
 
 Please submit any issues you find at https://github.com/kaykurokawa/pushtx/issues
+
 
 
